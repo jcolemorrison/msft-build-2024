@@ -101,51 +101,51 @@ resource "azurerm_bastion_host" "main" {
 }
 
 # Create a Cognitive Services Account
-resource "azurerm_cognitive_account" "openai" {
-  name                = "openai-ca"
-  location            = azurerm_resource_group.build.location
-  resource_group_name = azurerm_resource_group.build.name
-  kind                = "OpenAI"
-  sku_name            = "F0"
-  public_network_access_enabled = false
-  custom_subdomain_name = "build-openai"
-}
+# resource "azurerm_cognitive_account" "openai" {
+#   name                = "openai-ca"
+#   location            = azurerm_resource_group.build.location
+#   resource_group_name = azurerm_resource_group.build.name
+#   kind                = "OpenAI"
+#   sku_name            = "F0"
+#   public_network_access_enabled = false
+#   custom_subdomain_name = "build-openai"
+# }
 
-# Creates a private DNS zone named "privatelink.openai.azure.com" in the specified resource group.
-resource "azurerm_private_dns_zone" "openai" {
-  name                = "privatelink.openai.azure.com"
-  resource_group_name = azurerm_resource_group.build.name
-}
+# # Creates a private DNS zone named "privatelink.openai.azure.com" in the specified resource group.
+# resource "azurerm_private_dns_zone" "openai" {
+#   name                = "privatelink.openai.azure.com"
+#   resource_group_name = azurerm_resource_group.build.name
+# }
 
-# Creates a private endpoint in the specified resource group and subnet.
-# The private endpoint is associated with a Cognitive Services account.
-# The private endpoint allows you to securely access the Cognitive Services account over a private network connection.
-resource "azurerm_private_endpoint" "openai" {
-  name                = "pe-openai-we"
-  location            = azurerm_resource_group.build.location
-  resource_group_name = azurerm_resource_group.build.name
-  subnet_id           = azurerm_subnet.private.id
+# # Creates a private endpoint in the specified resource group and subnet.
+# # The private endpoint is associated with a Cognitive Services account.
+# # The private endpoint allows you to securely access the Cognitive Services account over a private network connection.
+# resource "azurerm_private_endpoint" "openai" {
+#   name                = "pe-openai-we"
+#   location            = azurerm_resource_group.build.location
+#   resource_group_name = azurerm_resource_group.build.name
+#   subnet_id           = azurerm_subnet.private.id
 
-  # Specifies the details of the connection to the Cognitive Services account.
-  private_service_connection {
-    name                           = "pe-openai-we"
-    private_connection_resource_id = azurerm_cognitive_account.openai.id
-    subresource_names              = ["account"]
-    is_manual_connection           = false
-  }
+#   # Specifies the details of the connection to the Cognitive Services account.
+#   private_service_connection {
+#     name                           = "pe-openai-we"
+#     private_connection_resource_id = azurerm_cognitive_account.openai.id
+#     subresource_names              = ["account"]
+#     is_manual_connection           = false
+#   }
 
-  # Associates the private endpoint with the private DNS zone created earlier.
-  private_dns_zone_group {
-    name                 = "default"
-    private_dns_zone_ids = [azurerm_private_dns_zone.openai.id]
-  }
-}
+#   # Associates the private endpoint with the private DNS zone created earlier.
+#   private_dns_zone_group {
+#     name                 = "default"
+#     private_dns_zone_ids = [azurerm_private_dns_zone.openai.id]
+#   }
+# }
 
-# Creates a link between the private DNS zone and a virtual network.
-# This allows the DNS zone to resolve names for resources within the virtual network.
-resource "azurerm_private_dns_zone_virtual_network_link" "openai" {
-  name                  = "openai-vnet-link"
-  resource_group_name   = azurerm_resource_group.build.name
-  private_dns_zone_name = azurerm_private_dns_zone.openai.name
-  virtual_network_id    = azurerm_virtual_network.main.id
-}
+# # Creates a link between the private DNS zone and a virtual network.
+# # This allows the DNS zone to resolve names for resources within the virtual network.
+# resource "azurerm_private_dns_zone_virtual_network_link" "openai" {
+#   name                  = "openai-vnet-link"
+#   resource_group_name   = azurerm_resource_group.build.name
+#   private_dns_zone_name = azurerm_private_dns_zone.openai.name
+#   virtual_network_id    = azurerm_virtual_network.main.id
+# }

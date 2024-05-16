@@ -18,5 +18,5 @@ provider "azurerm" {
 # Create a resource group
 resource "azurerm_resource_group" "build" {
   name     = "build-base-resources"
-  location = "West US"
+  location = "East US"
 }
